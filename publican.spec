@@ -2,9 +2,10 @@
 # Track font name changes
 %define RHEL5 %(test %{?dist} == .el5 && echo 1 || echo 0)
 %define RHEL6 %(test %{?dist} == .el6 && echo 1 || echo 0)
+%define GOOSE6 %(test %{?dist} == .gl6 && echo 1 || echo 0)
 # Assume not rhel means FC11+ ... ugly
 %define OTHER 1
-%if %{RHEL6}
+%if %{RHEL6} || %{GOOSE6}
 %define OTHER 0
 %endif
 %if %{RHEL5}
@@ -21,7 +22,7 @@
 
 Name:           publican
 Version:        2.1
-Release:        0%{?dist}
+Release:        0%{?dist}.goose.1
 Summary:        Common files and scripts for publishing with DocBook XML
 # For a breakdown of the licensing, refer to LICENSE
 License:        (GPLv2+ or Artistic) and CC0
@@ -29,8 +30,8 @@ Group:          Applications/Publishing
 URL:            https://publican.fedorahosted.org
 Source0:        https://fedorahosted.org/released/publican/Publican-%{version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-# Limited to these arches on RHEL 6 due to PDF + Java limitations
-%if %{RHEL6}
+# Limited to these arches on EL6 due to PDF + Java limitations
+%if %{RHEL6} || %{GOOSE6}
 BuildArch:      i386 x86_64
 %else
 BuildArch:      noarch
@@ -220,6 +221,9 @@ rm -rf $RPM_BUILD_ROOT
 %doc fdl.txt
 
 %changelog
+* Sun Sep 16 2012 Clint Savage <herlo@gooseproject.org> 2.1-0.goose.1
+- Update to include .gl6 as optional dist
+
 * Tue Jul 06 2010 Jeff Fearn <jfearn@redhat.com> 2.1-0
 - Fix broken install_book not updating DB.
 - Fix typos in docs.
